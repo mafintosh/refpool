@@ -1,0 +1,26 @@
+{
+  "name": "refpool",
+  "version": "1.0.0",
+  "description": "Pool of references that gc the least recently unref'ed ones when it reaches a max size",
+  "main": "index.js",
+  "dependencies": {
+    "time-ordered-set": "^1.0.2"
+  },
+  "devDependencies": {
+    "standard": "^14.3.4",
+    "tape": "^5.0.1"
+  },
+  "scripts": {
+    "test": "standard && tape test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mafintosh/refpool.git"
+  },
+  "author": "Mathias Buus (@mafintosh)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mafintosh/refpool/issues"
+  },
+  "homepage": "https://github.com/mafintosh/refpool"
+}
