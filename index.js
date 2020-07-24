@@ -16,6 +16,12 @@ class Entry {
     this.pool._gcMaybe()
   }
 
+  delete () {
+    this.pool.gcable.remove(this)
+    this.pool.entries.delete(this.key)
+    if (this.pool.close) this.pool.close(this.value)
+  }
+
   increment () {
     this.refs++
     if (this.refs === 1) {
@@ -60,6 +66,11 @@ module.exports = class Pool {
     return entry.value
   }
 
+  delete (key) {
+    const e = this.entry(key)
+    if (e) e.delete()
+  }
+
   add (val, forceGC = false) {
     return this.set(val, val, forceGC)
   }
@@ -86,9 +97,7 @@ module.exports = class Pool {
   gc () {
     const oldest = this.gcable.oldest
     if (!oldest) return null
-    this.gcable.remove(oldest)
-    this.entries.delete(oldest.value)
-    if (this.close) this.close(oldest.value)
+    oldest.delete()
     return oldest.value
   }
 
