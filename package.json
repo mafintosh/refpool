@@ -1,6 +1,6 @@
 {
   "name": "refpool",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Pool of references that gc the least recently unref'ed ones when it reaches a max size",
   "main": "index.js",
   "dependencies": {
