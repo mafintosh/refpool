@@ -62,7 +62,8 @@ module.exports = class Pool {
 
   get (key, bump = true) {
     const entry = this.entry(key)
-    if (entry && bump) entry.bump()
+    if (!entry) return
+    if (bump) entry.bump()
     return entry.value
   }
 
