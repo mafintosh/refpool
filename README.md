@@ -20,10 +20,15 @@ const p = new Pool({
 
 const someResource = ...
 
-p.add(data) // add it to the pool
-p.increment(data) // add it and increment the reference count
-p.decrement(data) // decrement the ref count
-p.bump(data) // indicate that you used a thing in the pool
+p.set(key, val) // add a key to the pool
+p.get(key) // get a val (bumps it) get(key, false) does not bump
+p.add(data) // sugar for p.set(data, data)
+const e = p.entry(key) // get the cache entry object out.
+                       // you can call e.increment, decrement and bump on this direcly
+
+p.increment(key) // add it and increment the reference count
+p.decrement(key) // decrement the ref count
+p.bump(key) // indicate that you used a thing in the pool
 ```
 
 When more than `maxSize` items are inserted the least recently used

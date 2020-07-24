@@ -1,10 +1,11 @@
 const TOS = require('time-ordered-set')
 
 class Entry {
-  constructor (pool, val) {
+  constructor (pool, key, val) {
     this.pool = pool
     this.prev = null
     this.next = null
+    this.key = key
     this.value = val
     this.refs = 0
   }
@@ -49,13 +50,36 @@ module.exports = class Pool {
     return this.entries.size < this.maxSize
   }
 
-  add (val, gc = true) {
-    const existing = this.entries.get(val)
-    if (existing) return existing
-    const entry = new Entry(this, val)
+  entry (key) {
+    return this.entries.get(key)
+  }
+
+  get (key, bump = true) {
+    const entry = this.entry(key)
+    if (entry && bump) entry.bump()
+    return entry.value
+  }
+
+  add (val, forceGC = false) {
+    return this.set(val, val, forceGC)
+  }
+
+  has (key) {
+    return this.entries.has(key)
+  }
+
+  set (key, val, forceGC = false) {
+    const existing = this.entries.get(key)
+    if (existing) {
+      existing.bump()
+      existing.value = val
+      return existing
+    }
+    const entry = new Entry(this, key, val)
     this.gcable.add(entry)
-    this.entries.set(val, entry)
-    if (gc) this._gcMaybe()
+    this.entries.set(key, entry)
+    // allow gc list to grow by one if otherwise we could destroy ourself unless forceGC is set
+    this._gcMaybe(!forceGC)
     return entry
   }
 
@@ -68,20 +92,24 @@ module.exports = class Pool {
     return oldest.value
   }
 
-  _gcMaybe () {
+  _gcMaybe (allowOne = false) {
+    if (this.gcable.length === 1 && allowOne) return
     if (this.entries.size <= this.maxSize && this.close) return
     this.gc()
   }
 
-  increment (val) {
-    this.add(val, false).increment()
+  increment (key) {
+    const e = this.entry(key)
+    if (e) e.increment()
   }
 
-  decrement (val) {
-    this.add(val, false).decrement()
+  decrement (key) {
+    const e = this.entry(key)
+    if (e) e.decrement()
   }
 
-  bump (val) {
-    this.add(val, false).bump()
+  bump (key) {
+    const e = this.entry(key)
+    if (e) e.bump()
   }
 }

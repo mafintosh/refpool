@@ -10,9 +10,15 @@ tape('basic', function (t) {
     }
   })
 
+  p.add(1)
   p.increment(1)
+
+  p.add(2)
   p.increment(2)
+
+  p.add(3)
   p.increment(3)
+
   p.add(4)
 
   p.increment(2)
