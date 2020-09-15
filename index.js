@@ -11,7 +11,7 @@ class Entry {
   }
 
   bump () {
-    if (!this.refs) return
+    if (this.refs > 0) return
     this.pool.gcable.add(this)
     this.pool._gcMaybe()
   }
